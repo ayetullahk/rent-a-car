@@ -34,6 +34,13 @@ public class CarService {
     @Autowired
     ReservationService reservationService;
 
+    /**
+     * Saves a new car with the provided information and associates it with the specified image.
+     *
+     * @param imageId        The identifier of the image to be associated with the new car.
+     * @param carDTO         The data transfer object containing information for creating a new car.
+     * @throws ConflictException Thrown if the specified image is already associated with another car.
+     */
     public void saveCar(String imageId, CarDTO carDTO) {
 
         ImageFile imageFile = imageFileService.findImageById(imageId);
@@ -54,6 +61,11 @@ public class CarService {
 
     }
 
+    /**
+     * Retrieves a list of all cars.
+     *
+     * @return List of CarDTOs containing information about all cars.
+     */
     public List<CarDTO> getAllCars() {
 
         List<Car> carList = carRepository.findAll();
@@ -61,7 +73,12 @@ public class CarService {
 
     }
 
-
+    /**
+     * Retrieves a paginated list of cars.
+     *
+     * @param pageable      The pageable object specifying the page, size, and sorting criteria.
+     * @return              Page of CarDTOs containing information about the cars on the specified page.
+     */
     public Page<CarDTO> findAllWithPage(Pageable pageable) {
 
         Page<Car> carPage = carRepository.findAll(pageable);
@@ -75,6 +92,13 @@ public class CarService {
 
     }
 
+    /**
+     * Retrieves information about a car by its identifier.
+     *
+     * @param id   The identifier of the car to be retrieved.
+     * @return     CarDTO containing information about the specified car.
+     * @throws NotFoundException Thrown if the specified car is not found.
+     */
     public CarDTO findById(Long id) {
 
         Car car = getCar(id);
@@ -82,13 +106,29 @@ public class CarService {
         return carMapper.carToCarDTO(car);
     }
 
+    /**
+     * Retrieves a car by its identifier.
+     *
+     * @param id   The identifier of the car to be retrieved.
+     * @return     Car entity representing the specified car.
+     * @throws ResourceNotFoundException Thrown if the specified car is not found.
+     */
     public Car getCar(Long id) {
         Car car = carRepository.findCarById(id).orElseThrow(() -> new
                 ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE, id)));
         return car;
     }
 
-
+    /**
+     * Updates the information of a car with the provided data and associates it with a new image.
+     *
+     * @param id         The identifier of the car to be updated.
+     * @param imageId    The identifier of the new image to be associated with the car.
+     * @param carDTO     The data transfer object containing updated information for the car.
+     * @throws BadRequestException   Thrown if the specified car is marked as built-in, and updates are not permitted.
+     * @throws ConflictException     Thrown if the new image is already associated with another car.
+     * @throws ResourceNotFoundException Thrown if the specified car or image is not found.
+     */
     public void updateCar(Long id, String imageId, CarDTO carDTO) {
         Car car = getCar(id);
 
@@ -120,6 +160,14 @@ public class CarService {
 
     }
 
+    /**
+     * Deletes a car by its identifier.
+     *
+     * @param id   The identifier of the car to be deleted.
+     * @throws BadRequestException           Thrown if the specified car is marked as built-in, and deletion is not permitted.
+     * @throws BadRequestException           Thrown if the specified car is currently reserved, and deletion is not permitted.
+     * @throws ResourceNotFoundException     Thrown if the specified car is not found.
+     */
     public void removeById(Long id) {
         Car car = getCar(id);
 
@@ -134,12 +182,25 @@ public class CarService {
 
         carRepository.delete(car);
     }
+
+    /**
+     * Retrieves a car by its identifier.
+     *
+     * @param id   The identifier of the car to be retrieved.
+     * @return     Car entity representing the specified car.
+     * @throws ResourceNotFoundException Thrown if the specified car is not found.
+     */
     public Car getCarById(Long id){
         Car car=carRepository.findById(id).orElseThrow(()->new
                 ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,id)));
         return car;
     }
 
+    /**
+     * Retrieves a list of all cars.
+     *
+     * @return List of Car entities representing all cars.
+     */
     public List<Car> getAllCar() {
         return carRepository.getAllBy();
     }

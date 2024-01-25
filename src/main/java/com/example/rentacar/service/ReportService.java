@@ -24,7 +24,12 @@ public class ReportService {
     @Autowired
     private ReservationService reservationService;
 
-
+    /**
+     * Generates an Excel report for user data and returns it as a ByteArrayInputStream.
+     *
+     * @return ByteArrayInputStream containing the Excel report for user data.
+     * @throws RuntimeException Thrown if an error occurs during Excel report generation.
+     */
     public ByteArrayInputStream getUserReport() {
 
         List<User> users=userService.getUsers();
@@ -36,6 +41,12 @@ public class ReportService {
         }
     }
 
+    /**
+     * Generates an Excel report for car data and returns it as a ByteArrayInputStream.
+     *
+     * @return ByteArrayInputStream containing the Excel report for car data.
+     * @throws RuntimeException Thrown if an error occurs during Excel report generation.
+     */
     public ByteArrayInputStream getCarReport() {
         List<Car>cars=carService.getAllCar();
 
@@ -46,6 +57,12 @@ public class ReportService {
         }
     }
 
+    /**
+     * Generates an Excel report for reservation data and returns it as a ByteArrayInputStream.
+     *
+     * @return ByteArrayInputStream containing the Excel report for reservation data.
+     * @throws RuntimeException Thrown if an error occurs during Excel report generation.
+     */
     public ByteArrayInputStream getReservationReport() {
         List<Reservation>reservations=reservationService.getAll();
         try {

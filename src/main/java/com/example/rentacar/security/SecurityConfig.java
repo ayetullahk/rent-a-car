@@ -28,6 +28,13 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http The HttpSecurity instance to configure.
+     * @return The configured SecurityFilterChain.
+     * @throws Exception if an error occurs during configuration.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
@@ -47,7 +54,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    //cors
+    /**
+     * Configures Cross-Origin Resource Sharing (CORS) for the application.
+     *
+     * @return WebMvcConfigurer instance with CORS configuration.
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -59,6 +70,7 @@ public class SecurityConfig {
         };
     }
 
+
     private static final String[] AUTH_WHITE_LIST = {
             "/v3/api-docs/**",
             "/swagger-ui.html",
@@ -69,6 +81,12 @@ public class SecurityConfig {
             "/js/**"
     };
 
+    /**
+     * Configures a {@link WebSecurityCustomizer} bean to customize the behavior of Spring Security for web requests.
+     * This customization is designed to ignore certain URL patterns during security checks.
+     *
+     * @return The configured {@link WebSecurityCustomizer} bean.
+     */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         WebSecurityCustomizer customizer = new WebSecurityCustomizer() {
@@ -80,18 +98,39 @@ public class SecurityConfig {
         return customizer;
     }
 
-
+    /**
+     * Configures and provides an instance of the {@link AuthTokenFilter}.
+     * The {@code AuthTokenFilter} is responsible for filtering and processing authentication tokens
+     * in the incoming HTTP requests to secure the application.
+     *
+     * @return An instance of the {@link AuthTokenFilter}.
+     */
     @Bean
     public AuthTokenFilter authTokenFilter() {
         return new AuthTokenFilter();
     }
 
-
+    /**
+     * Configures and provides an instance of the {@link BCryptPasswordEncoder}.
+     * The {@code BCryptPasswordEncoder} is a password encoder that uses the BCrypt strong hashing function
+     * to securely hash and verify passwords.
+     *
+     * @return An instance of the {@link BCryptPasswordEncoder} with a strength of 10.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 
+    /**
+     * Configures and provides an instance of {@link DaoAuthenticationProvider}.
+     * The {@code DaoAuthenticationProvider} is an authentication provider that
+     * authenticates users using a {@link UserDetailsService} for user retrieval
+     * and a {@link PasswordEncoder} for password validation.
+     *
+     * @return An instance of {@link DaoAuthenticationProvider} configured with
+     *         the application's {@link UserDetailsService} and {@link BCryptPasswordEncoder}.
+     */
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -101,6 +140,16 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+    /**
+     * Configures and provides an instance of {@link AuthenticationManager}.
+     * The {@code AuthenticationManager} is responsible for authenticating
+     * users using the configured {@link DaoAuthenticationProvider}.
+     *
+     * @param http The {@link HttpSecurity} instance shared by the application.
+     * @return An instance of {@link AuthenticationManager} configured with the
+     *         application's {@link DaoAuthenticationProvider}.
+     * @throws Exception If an error occurs during the configuration process.
+     */
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).

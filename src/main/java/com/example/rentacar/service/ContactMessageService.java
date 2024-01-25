@@ -21,29 +21,65 @@ public class ContactMessageService {
         this.contactMessageRepository = contactMessageRepository;
     }
 
+    /**
+     * Saves a new contact message.
+     *
+     * @param contactMessage   The ContactMessage entity to be saved.
+     */
     public void saveMessage(ContactMessage contactMessage) {
         contactMessageRepository.save(contactMessage);
     }
 
+    /**
+     * Retrieves a list of all contact messages.
+     *
+     * @return List of ContactMessage entities representing all contact messages.
+     */
     public List<ContactMessage> getAll() {
         return contactMessageRepository.findAll();
     }
 
+    /**
+     * Retrieves a paginated list of all contact messages.
+     *
+     * @param pageable   Pagination information.
+     * @return           Page of ContactMessage entities representing a subset of all contact messages.
+     */
     public Page<ContactMessage> getAll(Pageable pageable) {
         return contactMessageRepository.findAll(pageable);
     }
 
+    /**
+     * Retrieves a contact message by its identifier.
+     *
+     * @param id   The identifier of the contact message to be retrieved.
+     * @return     ContactMessage entity representing the specified contact message.
+     * @throws ResourceNotFoundException Thrown if the specified contact message is not found.
+     */
     public ContactMessage getContactMessage(Long id) {
         ContactMessage contactMessage = contactMessageRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE, id)));
         return contactMessage;
     }
 
+    /**
+     * Deletes a contact message by its identifier.
+     *
+     * @param id   The identifier of the contact message to be deleted.
+     * @throws ResourceNotFoundException Thrown if the specified contact message is not found.
+     */
     public void deleteContactMessage(Long id) {
         ContactMessage foundContactMessage = getContactMessage(id);
         contactMessageRepository.delete(foundContactMessage);
     }
 
+    /**
+     * Updates the information of a contact message by its identifier.
+     *
+     * @param id               The identifier of the contact message to be updated.
+     * @param contactMessage   The ContactMessage entity containing updated information.
+     * @throws ResourceNotFoundException Thrown if the specified contact message is not found.
+     */
     public void updateContactMessage(Long id, ContactMessage contactMessage) {
         ContactMessage foundContactMessage = getContactMessage(id);
         foundContactMessage.setName(contactMessage.getName());

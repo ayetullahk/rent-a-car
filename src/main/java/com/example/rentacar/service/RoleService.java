@@ -13,6 +13,13 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
+    /**
+     * Retrieves a role based on its type.
+     *
+     * @param roleType The type of the role.
+     * @return The Role entity with the specified type.
+     * @throws ResourceNotFoundException if the role with the specified type is not found.
+     */
     public Role findByType(RoleType roleType) {
         Role role = roleRepository.findByType(roleType).orElseThrow(() ->
                 new ResourceNotFoundException(String.format(ErrorMessage.ROLE_NOT_FOUND_MESSAGE, roleType.name())));

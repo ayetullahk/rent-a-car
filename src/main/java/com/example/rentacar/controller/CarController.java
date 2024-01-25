@@ -28,6 +28,18 @@ public class CarController {
     @Autowired
     private ImageFileService imageFileService;
 
+    /**
+     * Adds a new car with the specified image identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param imageId              The identifier of the image associated with the car.
+     * @param carDTO               The request body containing the details of the car. Should be valid (@Valid).
+     * @return                     ResponseEntity containing a VRResponse with information about the car addition process.
+     *                             The response includes a message and success status.
+     *                             The HTTP status in the response is HttpStatus.CREATED.
+     * @throws NotFoundException   Thrown if the specified image is not found.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     */
     @PostMapping("/admin/{imageId}/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse> saveCar(@PathVariable String imageId, @Valid @RequestBody CarDTO carDTO) {
@@ -39,6 +51,13 @@ public class CarController {
 
     }
 
+    /**
+     * Retrieves a list of all cars for visitors (non-authenticated users).
+     *
+     * @return                  ResponseEntity containing a list of CarDTOs with information about all cars.
+     *                          The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException   Thrown if no cars are found.
+     */
     @GetMapping("/visitors/all")
     public ResponseEntity<List<CarDTO>> getAllCars() {
 
@@ -47,6 +66,18 @@ public class CarController {
         return ResponseEntity.ok(allCars);
     }
 
+    /**
+     * Retrieves a paginated list of all cars for visitors (non-authenticated users).
+     *
+     * @param page                The page number to retrieve (0-indexed).
+     * @param size                The number of cars per page.
+     * @param prop                The property by which to sort the results.
+     * @param direction           The sorting direction, either ASC (ascending) or DESC (descending). Default is DESC.
+     * @return                    ResponseEntity containing a Page of CarDTOs with information about all cars.
+     *                            The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException  Thrown if no cars are found.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     */
     @GetMapping("/visitors/pages")
     public ResponseEntity<Page<CarDTO>> getAllCarsWithPage(@RequestParam("page") int page,
                                                            @RequestParam("size") int size,
@@ -60,12 +91,34 @@ public class CarController {
 
         return ResponseEntity.ok(pageDTO);
     }
+    /**
+     * Retrieves the details of a specific car for visitors (non-authenticated users) by its identifier.
+     *
+     * @param id                The identifier of the car to retrieve.
+     * @return                  ResponseEntity containing a CarDTO with information about the specified car.
+     *                          The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException   Thrown if the specified car is not found.
+     */
     @GetMapping("/visitors/{id}")
     public ResponseEntity<CarDTO>getCarById(@PathVariable Long id){
         CarDTO carDTO=carService.findById(id);
 
         return ResponseEntity.ok(carDTO);
     }
+
+    /**
+     * Updates the details of an existing car.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                  The identifier of the car to be updated.
+     * @param imageId             The identifier of the image associated with the car.
+     * @param carDTO              The request body containing the updated details of the car. Should be valid (@Valid).
+     * @return                    ResponseEntity containing a VRResponse with information about the car update process.
+     *                            The response includes a message and success status.
+     *                            The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException   Thrown if the specified car is not found.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     */
     @PutMapping("/admin/auth")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse> updateCar(@RequestParam("id")Long id,
@@ -77,6 +130,17 @@ public class CarController {
 
         return ResponseEntity.ok(response);
     }
+    /**
+     * Deletes a car with the specified identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                The identifier of the car to be deleted.
+     * @return                  ResponseEntity containing a VRResponse with information about the car deletion process.
+     *                          The response includes a message and success status.
+     *                          The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException   Thrown if the specified car is not found.
+     * @throws UnauthorizedException Thrown if the user is not authorized to delete the car.
+     */
     @DeleteMapping("/admin/{id}/auth")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse> deleteCar(@PathVariable Long id){

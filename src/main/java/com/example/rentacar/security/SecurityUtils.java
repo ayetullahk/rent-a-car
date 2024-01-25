@@ -8,8 +8,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
-public class SecurityUtils {//controller katmanında anlık olarak login olan kullanıcıya ihtiyac olması halinde burada bulanan metod kullanmak
+public class SecurityUtils {
 
+    /**
+     * Retrieves the login (username or email) of the currently authenticated user.
+     *
+     * @return An {@link Optional} containing the login of the currently authenticated user,
+     *         or an empty {@link Optional} if the user is not authenticated.
+     */
     public static Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
@@ -19,6 +25,13 @@ public class SecurityUtils {//controller katmanında anlık olarak login olan ku
 
     }
 
+    /**
+     * Extracts the principal (login) from the given Authentication object.
+     *
+     * @param authentication The Authentication object from which to extract the principal.
+     * @return The login (username or email) of the principal, or {@code null} if the principal
+     *         cannot be extracted or is not available.
+     */
     private static String extractPrincipal(Authentication authentication){
         if (authentication==null){
             return null;

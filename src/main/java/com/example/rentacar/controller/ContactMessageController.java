@@ -33,6 +33,16 @@ public class ContactMessageController {
         this.contactMessageMapper = contactMessageMapper;
     }
 
+    /**
+     * Creates a new contact message.
+     * This endpoint is accessible to visitors (non-authenticated users).
+     *
+     * @param contactMessageRequest   The request body containing the details of the contact message. Should be valid (@Valid).
+     * @return                        ResponseEntity containing a VRResponse with information about the message creation process.
+     *                                The response includes a message and success status.
+     *                                The HTTP status in the response is HttpStatus.CREATED.
+     * @throws InvalidInputException  Thrown if the input parameters are invalid.
+     */
     @PostMapping("/visitors")
     public ResponseEntity<VRResponse> createMessage(@Valid @RequestBody ContactMessageRequest contactMessageRequest) {
 
@@ -44,7 +54,14 @@ public class ContactMessageController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    //bütün mesajları cekme
+    /**
+     * Retrieves a list of all contact messages.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @return                    ResponseEntity containing a list of ContactMessageDTOs with information about all contact messages.
+     *                            The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException  Thrown if no contact messages are found.
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ContactMessageDTO>> getAllContactMessage() {
@@ -54,7 +71,19 @@ public class ContactMessageController {
         return ResponseEntity.ok(contactMessageDTOList);
     }
 
-    //data sayısı fazla ise paging yapmak gereke bilir
+    /**
+     * Retrieves a paginated list of all contact messages.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param page                   The page number to retrieve (0-indexed).
+     * @param size                   The number of contact messages per page.
+     * @param prop                   The property by which to sort the results.
+     * @param direction              The sorting direction, either ASC (ascending) or DESC (descending). Default is DESC.
+     * @return                       ResponseEntity containing a Page of ContactMessageDTOs with information about all contact messages.
+     *                               The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException     Thrown if no contact messages are found.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     */
     @GetMapping("/pages")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ContactMessageDTO>> getAllContactMessageWithPage(
@@ -71,7 +100,15 @@ public class ContactMessageController {
         return ResponseEntity.ok(pageDTO);
     }
 
-    //spesifik contactmessage getirme
+    /**
+     * Retrieves the details of a specific contact message by its identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                    The identifier of the contact message to retrieve.
+     * @return                      ResponseEntity containing a ContactMessageDTO with information about the specified contact message.
+     *                              The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException    Thrown if the specified contact message is not found.
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ContactMessageDTO> getMessageWithPath(@PathVariable("id") Long id) {
@@ -81,7 +118,15 @@ public class ContactMessageController {
         return ResponseEntity.ok(contactMessageDTO);
     }
 
-    //getByid with RequestParam
+    /**
+     * Retrieves the details of a specific contact message by its identifier using a request parameter.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                    The identifier of the contact message to retrieve.
+     * @return                      ResponseEntity containing a ContactMessageDTO with information about the specified contact message.
+     *                              The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException    Thrown if the specified contact message is not found.
+     */
     @GetMapping("/request")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ContactMessageDTO> getMessageWithRequestParam(@RequestParam("id") Long id) {
@@ -91,6 +136,17 @@ public class ContactMessageController {
         return ResponseEntity.ok(contactMessageDTO);
     }
 
+    /**
+     * Deletes a contact message with the specified identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                The identifier of the contact message to be deleted.
+     * @return                  ResponseEntity containing a VRResponse with information about the contact message deletion process.
+     *                          The response includes a message and success status.
+     *                          The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException   Thrown if the specified contact message is not found.
+     * @throws UnauthorizedException Thrown if the user is not authorized to delete the contact message.
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse> deleteContactMessage(@PathVariable Long id) {
@@ -100,6 +156,19 @@ public class ContactMessageController {
         return ResponseEntity.ok(vrResponse);
     }
 
+    /**
+     * Updates the details of an existing contact message.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                          The identifier of the contact message to be updated.
+     * @param contactMessageRequest      The request body containing the updated details of the contact message. Should be valid (@Valid).
+     * @return                            ResponseEntity containing a VRResponse with information about the contact message update process.
+     *                                    The response includes a message and success status.
+     *                                    The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException          Thrown if the specified contact message is not found.
+     * @throws InvalidInputException      Thrown if the input parameters are invalid.
+     * @throws UnauthorizedException      Thrown if the user is not authorized to update the contact message.
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse> updateContactMessage(@PathVariable Long id, @Valid
@@ -112,7 +181,12 @@ public class ContactMessageController {
         return ResponseEntity.ok(vrResponse);
     }
 
-
+    /**
+     * Maps a Page of ContactMessage entities to a Page of ContactMessageDTOs.
+     *
+     * @param contactMessagePage    The Page of ContactMessage entities to be mapped to DTOs.
+     * @return                      The resulting Page of ContactMessageDTOs.
+     */
     private Page<ContactMessageDTO> getPageDto(Page<ContactMessage> contactMessagePage) {
         Page<ContactMessageDTO> dtoPage = contactMessagePage.map(new java.util.function.Function<ContactMessage, ContactMessageDTO>() {
             @Override

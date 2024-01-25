@@ -32,7 +32,16 @@ public class UserJwtController { //login ve register işlemleri için
     @Autowired
     private JwtUtils jwtUtils;
 
-
+    /**
+     * Registers a new user.
+     * This endpoint is publicly accessible.
+     *
+     * @param registerRequest   The request body containing information for registering a new user.
+     * @return                  ResponseEntity containing a VRResponse with information about the user registration process.
+     *                          The response includes a message and success status.
+     *                          The HTTP status in the response is HttpStatus.CREATED.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     */
     @PostMapping("/register")
     public ResponseEntity<VRResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         userService.saveUser(registerRequest);
@@ -44,6 +53,15 @@ public class UserJwtController { //login ve register işlemleri için
 
     }
 
+    /**
+     * Authenticates a user by generating a JWT token upon successful login.
+     * This endpoint is publicly accessible.
+     *
+     * @param loginRequest       The request body containing user credentials for authentication.
+     * @return                   ResponseEntity containing a LoginResponse with the generated JWT token.
+     *                           The HTTP status in the response is HttpStatus.OK.
+     * @throws AuthenticationException Thrown if the user authentication fails.
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

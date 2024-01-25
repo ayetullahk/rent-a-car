@@ -51,12 +51,25 @@ public class UserService {
         this.reservationService = reservationService;
     }
 
+    /**
+     * Retrieves a user based on its email address.
+     *
+     * @param email The email address of the user.
+     * @return The User entity with the specified email address.
+     * @throws ResourceNotFoundException if the user with the specified email address is not found.
+     */
     public User getUserByEmail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new ResourceNotFoundException(String.format(ErrorMessage.USER_NOT_FOUND_MESSAGE, email)));
         return user;
     }
 
+    /**
+     * Saves a new user based on the registration request.
+     *
+     * @param registerRequest The registration request containing user details.
+     * @throws ConflictException if a user with the provided email already exists.
+     */
     public void saveUser(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new ConflictException(String.format(ErrorMessage.EMAIL_ALREADY_EXIST_MESSAGE,
@@ -84,6 +97,11 @@ public class UserService {
 
     }
 
+    /**
+     * Retrieves a list of all users and maps them to UserDTO objects.
+     *
+     * @return List of UserDTO representing all users.
+     */
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         List<UserDTO> userDTOs = userMapper.map(users);
@@ -91,6 +109,11 @@ public class UserService {
         return userDTOs;
     }
 
+    /**
+     * Retrieves the currently authenticated user and maps it to a UserDTO object.
+     *
+     * @return UserDTO representing the currently authenticated user.
+     */
     public UserDTO getPrincipal() {
         User currentUser = getCurrentUser();
         UserDTO userDTO = userMapper.userToUserDTO(currentUser);
@@ -98,6 +121,12 @@ public class UserService {
         return userDTO;
     }
 
+    /**
+     * Retrieves the currently authenticated user based on the user's email.
+     *
+     * @return User representing the currently authenticated user.
+     * @throws ResourceNotFoundException if the current user cannot be found.
+     */
     public User getCurrentUser() {
         String email = SecurityUtils.getCurrentUserLogin().orElseThrow(() ->
                 new ResourceNotFoundException(ErrorMessage.PRINCIPAL_FOUND_MESSAGE));
@@ -105,6 +134,12 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Retrieves a page of users with pagination.
+     *
+     * @param pageable The pagination information.
+     * @return Page of UserDTO representing users.
+     */
     public Page<UserDTO> getUserPage(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
 
@@ -112,6 +147,12 @@ public class UserService {
 
     }
 
+    /**
+     * Converts a Page<User> to a Page<UserDTO>.
+     *
+     * @param userPage The page of users.
+     * @return Page of UserDTO representing users.
+     */
     private Page<UserDTO> getUserDTOPage(Page<User> userPage) {
         Page<UserDTO> userDTOPage = userPage.map(new Function<User, UserDTO>() {
             @Override
@@ -122,12 +163,25 @@ public class UserService {
         return userDTOPage;
     }
 
+    /**
+     * Retrieves a User by ID and converts it to a UserDTO.
+     *
+     * @param id The ID of the user to retrieve.
+     * @return UserDTO representing the retrieved user.
+     * @throws ResourceNotFoundException if the user with the specified ID is not found.
+     */
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE, id)));
         return userMapper.userToUserDTO(user);
     }
 
+    /**
+     * Updates the password for the currently authenticated user.
+     *
+     * @param updatePasswordRequest Object containing old and new password details.
+     * @throws BadRequestException if the user is a built-in user or if the old password doesn't match the current password.
+     */
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
         User user = getCurrentUser();
 
@@ -143,6 +197,13 @@ public class UserService {
 
     }
 
+    /**
+     * Updates user information for the currently authenticated user.
+     *
+     * @param userUpdateRequest Object containing updated user details.
+     * @throws BadRequestException if the user is a built-in user.
+     * @throws ConflictException  if the provided email already exists for another user.
+     */
     @Transactional
     public void updateUser(UserUpdateRequest userUpdateRequest) {
         User user = getCurrentUser();
@@ -163,6 +224,14 @@ public class UserService {
 
     }
 
+    /**
+     * Updates user information and roles for the specified user by an admin.
+     *
+     * @param id                     ID of the user to be updated.
+     * @param adminUserUpdateRequest Object containing updated user details and roles.
+     * @throws BadRequestException  if the user is built-in.
+     * @throws ConflictException    if the provided email already exists for another user.
+     */
     public void updateUserAuth(Long id, AdminUserUpdateRequest adminUserUpdateRequest) {
 
         User user = getById(id);
@@ -197,6 +266,13 @@ public class UserService {
 
     }
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param id ID of the user to be retrieved.
+     * @return The user with the specified ID.
+     * @throws ResourceNotFoundException if no user is found with the given ID.
+     */
     public User getById(Long id) {
 
         User user = userRepository.findUserById(id).orElseThrow(() ->
@@ -204,6 +280,12 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Converts a set of role names to a set of Role objects.
+     *
+     * @param pRoles Set of role names to be converted.
+     * @return A set of Role objects based on the given role names.
+     */
     public Set<Role> convertRoles(Set<String> pRoles) {
         Set<Role> roles = new HashSet<>();
         if (pRoles == null) {
@@ -223,7 +305,12 @@ public class UserService {
         return roles;
     }
 
-
+    /**
+     * Removes a user by their ID.
+     *
+     * @param id ID of the user to be removed.
+     * @throws BadRequestException If the user is a built-in user or if there are existing reservations associated with the user.
+     */
     public void removeUserById(Long id) {
         User user = getById((id));
 
@@ -240,6 +327,11 @@ public class UserService {
 
     }
 
+    /**
+     * Retrieves a list of all users.
+     *
+     * @return List of all users.
+     */
     public List<User> getUsers() {
         return userRepository.findAll();
     }

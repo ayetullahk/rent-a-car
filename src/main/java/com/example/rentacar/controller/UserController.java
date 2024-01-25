@@ -26,7 +26,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    //getAllUser
+    /**
+     * Retrieves a list of all users.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @return                   ResponseEntity containing a list of UserDTOs with information about all users.
+     *                           The HTTP status in the response is HttpStatus.OK.
+     * @throws UnauthorizedException Thrown if the user is not authorized to access the list of users.
+     */
     @GetMapping("/auth/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -35,7 +42,14 @@ public class UserController {
         return ResponseEntity.ok(allUsers);
     }
 
-    //sisteme giren kullanıcı bilgilerini getiren metod
+    /**
+     * Retrieves the details of the authenticated user.
+     * This endpoint is accessible to users with either the ADMIN or CUSTOMER role.
+     *
+     * @return                   ResponseEntity containing a UserDTO with information about the authenticated user.
+     *                           The HTTP status in the response is HttpStatus.OK.
+     * @throws UnauthorizedException Thrown if the user is not authorized to access their own details.
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')or hasRole('CUSTOMER')")
     public ResponseEntity<UserDTO> getUser() {
@@ -44,7 +58,19 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
-    //getAllUsersByPage
+    /**
+     * Retrieves a paginated list of all users.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param page                The page number (zero-based) to be retrieved.
+     * @param size                The number of items per page.
+     * @param prop                The property by which the result should be sorted.
+     * @param direction           The sorting direction, either ASC or DESC.
+     * @return                    ResponseEntity containing a Page of UserDTOs with information about users.
+     *                            The response includes pagination details.
+     *                            The HTTP status in the response is HttpStatus.OK.
+     * @throws UnauthorizedException Thrown if the user is not authorized to access the paginated list of users.
+     */
     @GetMapping("/auth/pages")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserDTO>> getAllUsersByPage(
@@ -60,8 +86,17 @@ public class UserController {
         return ResponseEntity.ok(userDTOPage);
 
     }
-    //getUserByid
 
+    /**
+     * Retrieves the details of a user by their identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                  The identifier of the user to be retrieved.
+     * @return                    ResponseEntity containing a UserDTO with information about the specified user.
+     *                            The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException  Thrown if the specified user is not found.
+     * @throws UnauthorizedException Thrown if the user is not authorized to access the details of the specified user.
+     */
     @GetMapping("/{id}/auth")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
@@ -69,8 +104,18 @@ public class UserController {
 
         return ResponseEntity.ok(userDTO);
     }
-    //update password
 
+    /**
+     * Updates the password of the authenticated user.
+     * This endpoint is accessible to users with either the ADMIN or CUSTOMER role.
+     *
+     * @param updatePasswordRequest The request body containing information for updating the password.
+     * @return                      ResponseEntity containing a VRResponse with information about the password update process.
+     *                              The response includes a message and success status.
+     *                              The HTTP status in the response is HttpStatus.OK.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     * @throws UnauthorizedException Thrown if the user is not authorized to update their own password.
+     */
     @PatchMapping("/auth")
     @PreAuthorize("hasRole('ADMIN')or hasRole('CUSTOMER')")
     public ResponseEntity<VRResponse> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
@@ -83,6 +128,17 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Updates the details of the authenticated user.
+     * This endpoint is accessible to users with either the ADMIN or CUSTOMER role.
+     *
+     * @param userUpdateRequest     The request body containing information for updating the user details.
+     * @return                      ResponseEntity containing a VRResponse with information about the user update process.
+     *                              The response includes a message and success status.
+     *                              The HTTP status in the response is HttpStatus.OK.
+     * @throws InvalidInputException Thrown if the input parameters are invalid.
+     * @throws UnauthorizedException Thrown if the user is not authorized to update their own details.
+     */
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')or hasRole('CUSTOMER')")
     public ResponseEntity<VRResponse> updateUser(@Valid @RequestBody UserUpdateRequest userUpdateRequest) {
@@ -95,7 +151,19 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    //admin kullanıcı güncelleme
+    /**
+     * Updates the authentication details of a user by their identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                       The identifier of the user to be updated.
+     * @param adminUserUpdateRequest   The request body containing information for updating the user authentication details.
+     * @return                         ResponseEntity containing a VRResponse with information about the user update process.
+     *                                 The response includes a message and success status.
+     *                                 The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException       Thrown if the specified user is not found.
+     * @throws InvalidInputException    Thrown if the input parameters are invalid.
+     * @throws UnauthorizedException    Thrown if the user is not authorized to update the authentication details of the specified user.
+     */
     @PutMapping("/{id}/auth")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse> updateUserAuth(@PathVariable Long id, @Valid @RequestBody
@@ -108,6 +176,18 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Deletes a user by their identifier.
+     * This endpoint is restricted to users with the ADMIN role.
+     *
+     * @param id                   The identifier of the user to be deleted.
+     * @return                     ResponseEntity containing a VRResponse with information about the user deletion process.
+     *                             The response includes a message and success status.
+     *                             The HTTP status in the response is HttpStatus.OK.
+     * @throws NotFoundException   Thrown if the specified user is not found.
+     * @throws UnauthorizedException Thrown if the user is not authorized to delete the specified user.
+     */
     @DeleteMapping("/{id}/auth")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VRResponse>deleteUser(@PathVariable Long id){

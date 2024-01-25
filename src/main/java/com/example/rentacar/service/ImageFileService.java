@@ -22,6 +22,13 @@ public class ImageFileService {
     @Autowired
     private ImageFileRepository imageFileRepository;
 
+    /**
+     * Saves an image file to the system.
+     *
+     * @param file   The MultipartFile representing the image file.
+     * @return       The identifier of the saved image file.
+     * @throws RuntimeException Thrown if an error occurs while processing the image file.
+     */
     public String saveImage(MultipartFile file) {
 
         ImageFile imageFile = null;
@@ -39,6 +46,13 @@ public class ImageFileService {
         return imageFile.getId();
     }
 
+    /**
+     * Retrieves an image file by its identifier.
+     *
+     * @param id   The identifier of the image file to be retrieved.
+     * @return     ImageFile entity representing the specified image file.
+     * @throws ResourceNotFoundException Thrown if the specified image file is not found.
+     */
     public ImageFile getImageById(String id) {
 
         ImageFile imageFile = imageFileRepository.findById(id).orElseThrow(() -> new
@@ -48,6 +62,11 @@ public class ImageFileService {
 
     }
 
+    /**
+     * Retrieves a list of all image files with their metadata.
+     *
+     * @return List of ImageFileDTO representing all image files.
+     */
     public List<ImageFileDTO> getAllImages() {
 
         List<ImageFile> imageFiles = imageFileRepository.findAll();
@@ -62,13 +81,25 @@ public class ImageFileService {
 
     }
 
-
+    /**
+     * Removes an image file by its identifier.
+     *
+     * @param id   The identifier of the image file to be removed.
+     * @throws ResourceNotFoundException Thrown if the specified image file is not found.
+     */
     public void removeById(String id) {
         ImageFile imageFile = getImageById(id);
         imageFileRepository.delete(imageFile);
 
     }
 
+    /**
+     * Finds an image file by its identifier.
+     *
+     * @param id   The identifier of the image file to be found.
+     * @return     ImageFile entity representing the specified image file.
+     * @throws ResourceNotFoundException Thrown if the specified image file is not found.
+     */
     public ImageFile findImageById(String id) {
         return imageFileRepository.findImageById(id).orElseThrow(() -> new
                 ResourceNotFoundException(String.format(ErrorMessage.IMAGE_NOT_FOUND_MESSAGE, id)));
